@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 type Engine struct {
@@ -23,11 +22,6 @@ func Create(db *Table) *Engine {
 }
 
 func (api *Engine) InitRoute() {
-
-	api.Api.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://link.ieak.fun", "https://link.ieak.fun"},
-		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
-	}))
 
 	api.Api.File("/", "static/index.html")
 	api.Api.GET("/:string", func(c echo.Context) error {
