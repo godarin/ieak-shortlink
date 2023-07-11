@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Сжатие текста</title>
+    <!-- Подключение Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
+    <style>
+        body {
+            background-image: url(https://phonoteka.org/uploads/posts/2021-06/1624329066_10-phonoteka_org-p-belie-anime-oboi-krasivo-10.jpg);
+            background-repeat: no-repeat;
+            background-size: 100% 110%;
+        }
+
+        /* Центрирование содержимого по вертикали */
+        html, body {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+        }
+
+        /* Дополнительные стили для текстового поля */
+        #inputText {
+            width: 300px;
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<div class="container text-center">
+    <h1>Сжатие ссылки</h1>
+    <hr>
+    <input type="text" id="inputText" class="form-control" placeholder="Введите ссылку">
+    <button type="button" class="btn btn-primary" id="compressButton">Сжать</button>
+    <hr>
+    <p id="resultText" class="alert alert-success"></p>
+    <p id="errorMessage" class="alert alert-danger"></p>
+</div>
+
+<!-- Подключение Bootstrap JS и jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script>
+
+<!-- JavaScript код для сжатия текста и отправки POST-запроса -->
+<script>
+    document.getElementById("resultText").hidden = true;
+    document.getElementById("errorMessage").hidden = true;
+
+    // Обработчик клика по кнопке
+    document.getElementById("compressButton").addEventListener("click", function () {
+        var inputText = document.getElementById("inputText").value;
+
+        // Валидация ссылки
+        if (!isValidURL(inputText)) {
+            document.getElementById("errorMessage").hidden = false;
+            document.getElementById("errorMessage").innerHTML = "это не ссылка";
+            return;
+        }
+        document.getElementById("errorMessage").hidden = true;
+        document.getElementById("errorMessage").innerHTML = ""; // Сброс ошибки
+
+        var compressedText = compressText(inputText);
+        // Отправка POST-запроса
+        var xhr = new XMLHttpRequest();
+        var url = "/create";
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+
+                document.getElementById("resultText").hidden = false;
+                document.getElementById("resultText").innerHTML = ` <a href="${xhr.responseText}" >${xhr.responseText} </a> <button onclick="copy('${xhr.responseText}')" class="btn btn-dark">copy</button> `;
+            }
+        };
+
+        var data = JSON.stringify({link: inputText});
+        xhr.send(data);
+    });
+
+    // Функция для проверки корректности ссылки
+    function isValidURL(url) {
+        // Регулярное выражение для проверки ссылки
+        var pattern = /\b((?:https?:\/\/|www\.)\S+)\b/g;
+        return pattern.test(url);
+    }
+
+    function copy(text) {
+        // Создаем временный элемент textarea
+        var textarea = document.createElement("textarea");
+
+// Устанавливаем текст, который нужно скопировать
+        textarea.value = text;
+
+// Добавляем элемент в документ
+        document.body.appendChild(textarea);
+
+// Выделяем текст внутри textarea
+        textarea.select();
+
+// Копируем выделенный текст в буфер обмена
+        document.execCommand("copy");
+
+// Удаляем временный элемент textarea
+        document.body.removeChild(textarea);
+    }
+
+    // Функция для сжатия текста (пример)
+    function compressText(text) {
+        // Ваш код для сжатия текста
+        return text;
+    }
+</script>
+</body>
+</html>
